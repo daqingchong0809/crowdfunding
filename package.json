@@ -10,16 +10,24 @@
     "@types/node": "^16.11.26",
     "@types/react": "^17.0.43",
     "@types/react-dom": "^17.0.14",
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0",
+    "@web3-react/core": "^6.1.9",
+    "@web3-react/injected-connector": "^6.0.7",
+    "@web3-react/walletconnect-connector": "^6.2.13",
+    "ethers": "^5.6.2",
+    "node-sass": "^7.0.1",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
     "react-scripts": "5.0.0",
     "typescript": "^4.6.3",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
+    "start:dev": "dotenv -e .env.development react-app-rewired start",
+    "start:test": "dotenv -e .env.test react-app-rewired start",
+    "start:pro": "dotenv -e .env.production react-app-rewired start",
+    "build:dev": "dotenv -e .env.development react-app-rewired build",
+    "build:test": "dotenv -e .env.test react-app-rewired build",
+    "build:pro": "dotenv -e .env.production react-app-rewired build",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -39,5 +47,11 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@types/react-router-dom": "^5.3.3",
+    "customize-cra": "^1.0.0",
+    "dotenv-cli": "^5.1.0",
+    "react-app-rewired": "^2.2.1"
   }
 }
