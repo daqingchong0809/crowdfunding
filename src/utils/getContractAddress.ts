@@ -1,1 +1,1 @@
-export const CrowdFundingAddress = process.env.NEXT_PUBLIC_CROWDFUND || "";
+export const CrowdFundingAddress = process.env.REACT_APP_CROWDFUND || "";

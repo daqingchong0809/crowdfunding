@@ -1,5 +1,6 @@
 import { BigNumber as EthersBigNumber } from "@ethersproject/bignumber";
 import BigNumber from "bignumber.js";
+import { formatUnits } from "@ethersproject/units";
 
 // div
 export function formatAmount(balance: any, decimal = 18) {
@@ -60,3 +61,9 @@ export function getSubStr(str: string) {
   var subStr = subStr1 + "..." + subStr2;
   return subStr;
 }
+
+export const formatHexNumber = (number: EthersBigNumber, displayDecimals = 18, decimals = 18) => {
+  const remainder = number.mod(EthersBigNumber.from(10).pow(decimals - displayDecimals));
+
+  return formatUnits(number.sub(remainder), "0");
+};

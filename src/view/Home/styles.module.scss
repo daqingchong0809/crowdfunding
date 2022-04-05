@@ -1,4 +1,94 @@
 .home {
   width: 100%;
   height: 100vh;
+  background-color: rgb(227, 227, 227);
+}
+
+.header {
+  height: 60px;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  background-color: #fff;
+  &-left {
+    width: 45%;
+    height: 100%;
+    padding-left: 50px;
+    display: flex;
+    align-items: center;
+    &-logo {
+      height: 35px;
+      width: 35px;
+      background-image: url("../../assets/images/unnamed.png");
+      background-size: contain;
+      border-radius: 50px;
+    }
+  }
+  &-right {
+    width: 45%;
+    height: 100%;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding-right: 50px;
+    &-account {
+      min-width: 200px;
+      display: flex;
+      background-color: #edf0f3;
+      padding: 10px;
+      border-radius: 10px;
+    }
+    &-disconnect {
+      margin-left: 10px;
+      font-weight: 600;
+      color: #d7798b;
+    }
+    &-disconnect:hover {
+      cursor: pointer;
+    }
+    :global(.ant-btn) {
+      display: flex;
+      align-items: center;
+      font-weight: 600;
+      .header-radius {
+        height: 10px;
+        width: 10px;
+        border-radius: 50px;
+        background-color: gray;
+        margin-right: 10px;
+      }
+    }
+    :global(.ant-btn):hover {
+      color: gray;
+      border-color: gray;
+    }
+  }
+}
+
+.container {
+  width: 80%;
+  min-height: 100%;
+  margin: 0 auto;
+  &-header {
+    height: 60px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    border-bottom: 1px solid rgb(237, 237, 237);
+    &-add {
+      width: 100px;
+      height: 40px;
+      background-color: rgb(0, 146, 250);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+    }
+    &-add:hover {
+      cursor: pointer;
+      background-color: rgba(0, 146, 250, 0.8);
+    }
+  }
 }
