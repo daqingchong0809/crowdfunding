@@ -1,9 +1,76 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState } from "react";
 import { useCrowdFundingContract } from "request/contract//useContract";
 import { useWeb3React } from "@web3-react/core";
-import { calculateGasMargin, formatHexNumber } from "utils/formatData";
+import { calculateGasMargin, dateFormat, FormatsEnums } from "utils/formatData";
 import styles from "./styles.module.scss";
-import { Modal, Form, Input, Button, DatePicker, message, InputNumber } from "antd";
+import { Modal, Form, Input, Button, DatePicker, message, InputNumber, Table, Space } from "antd";
+import BigNumber from "bignumber.js";
+export declare type AlignType = "left" | "center" | "right";
+const columns = [
+  {
+    title: "众筹标题",
+    dataIndex: "title",
+    key: "id",
+    align: "center" as AlignType,
+  },
+  {
+    title: "众筹内容",
+    dataIndex: "content",
+    key: "id",
+    align: "center" as AlignType,
+  },
+  {
+    title: "众筹目标(ETH)",
+    dataIndex: "goalMoney",
+    key: "id",
+    align: "center" as AlignType,
+  },
+  {
+    title: "已筹集数量(ETH)",
+    dataIndex: "raisedMoney",
+    key: "id",
+    align: "center" as AlignType,
+  },
+  {
+    title: "众筹人数",
+    dataIndex: "fundersLength",
+    key: "id",
+    align: "center" as AlignType,
+  },
+  {
+    title: "众筹状态",
+    render: (
+      text: any,
+      record: { name: boolean | React.ReactChild | React.ReactFragment | React.ReactPortal | null | undefined },
+    ) => <div style={{ color: text.isSuccess ? "#71D08C" : "red" }}>{text.isSuccess ? "已完成" : "未完成"}</div>,
+    key: "id",
+    align: "center" as AlignType,
+  },
+  {
+    title: "截止时间",
+    dataIndex: "deadline",
+    key: "id",
+    align: "center" as AlignType,
+  },
+  {
+    title: " 操作",
+    key: "id",
+    align: "center" as AlignType,
+
+    render: (
+      text: any,
+      record: { name: boolean | React.ReactChild | React.ReactFragment | React.ReactPortal | null | undefined },
+    ) => (
+      <Space size="middle">
+        <div className={styles["container-table-join"]}>参加 {record.name}</div>
+      </Space>
+    ),
+  },
+];
+const edit = (record: Object) => {
+  console.log(record);
+};
+
 export default function Container() {
   const { account, library, chainId } = useWeb3React();
 
@@ -11,6 +78,8 @@ export default function Container() {
   const [form] = Form.useForm();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [time, setTime] = useState<number>(0);
+  const [allFundingsList, setAllFundingsList] = useState<any[]>([]);
+
   const config = {
     rules: [{ type: "object" as const, required: true, message: "Please select time!" }],
   };
@@ -54,7 +123,6 @@ export default function Container() {
         library.getTransactionReceipt(res.hash).then((receipt: any) => {
           if (receipt) {
             console.log("交易成功");
-
             clearInterval(timer);
           } else {
             clearInterval(timer);
@@ -86,8 +154,28 @@ export default function Container() {
     if (account && chainId) {
       const initData = async () => {
         let allFundingLen = await CrowdFundingInstance.allFundingsLength();
-        console.log(formatHexNumber(allFundingLen));
+        let arr = [];
+        let id = 0;
+        for (let index = 0; index < allFundingLen; index++) {
+          const fundings = await CrowdFundingInstance.allFundings(index);
+          console.log(222, fundings);
+
+          arr.push({
+            id: id++,
+            title: fundings.title,
+            content: fundings.content,
+            deadline: dateFormat(Number(fundings.deadline._hex), FormatsEnums.YMDHIS),
+            goalMoney: new BigNumber(fundings.goalMoney._hex).toString(),
+            raisedMoney: new BigNumber(fundings.raisedMoney._hex).toString(),
+            fundersLength: new BigNumber(fundings.fundersLength._hex).toString(),
+
+            isSuccess: fundings.isSuccess,
+          });
+        }
+
+        setAllFundingsList([...arr]);
       };
+
       initData();
     }
   }, [account, chainId, CrowdFundingInstance]);
@@ -97,6 +185,10 @@ export default function Container() {
         <div className={styles["container-header-add"]} onClick={showModal}>
           新增众筹
         </div>
+      </div>
+
+      <div className={styles["container-table"]}>
+        <Table columns={columns} dataSource={allFundingsList} rowKey="id" bordered />
       </div>
       <Modal title="新增众筹" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel} footer={null}>
         <Form
