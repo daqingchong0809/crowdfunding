@@ -104,7 +104,18 @@
     }
     &-join {
       color: white;
-      background-color: #00a195;
+      background-color: #5ec99d;
+      width: 50px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 20px;
+    }
+
+    &-apply {
+      color: white;
+      background-color: #cd6a6a;
       width: 50px;
       height: 30px;
       display: flex;
@@ -113,7 +124,8 @@
       border-radius: 20px;
     }
     &-join,
-    &-info:hover {
+    &-info,
+    &-apply:hover {
       cursor: pointer;
     }
   }
