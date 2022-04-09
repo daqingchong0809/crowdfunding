@@ -1,0 +1,59 @@
+.container {
+  width: 85%;
+  height: 100vh;
+  margin: 0 auto;
+}
+
+.header {
+  height: 60px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  &-left {
+    width: 45%;
+  }
+  &-right {
+    width: 45%;
+    text-align: right;
+  }
+}
+
+.alltable {
+  &-info {
+    color: white;
+    width: 50px;
+    height: 30px;
+    background-color: #f74e89;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 20px;
+  }
+  &-join {
+    color: white;
+    background-color: #5ec99d;
+    width: 50px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 20px;
+  }
+
+  &-apply {
+    color: white;
+    background-color: #cd6a6a;
+    width: 50px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 20px;
+  }
+  &-join,
+  &-info,
+  &-apply:hover {
+    cursor: pointer;
+  }
+}
