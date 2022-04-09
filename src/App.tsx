@@ -5,7 +5,6 @@ import getLibrary from "utils/getLibrary";
 import "./App.scss";
 import { Auth } from "./routes/auth";
 import { routerConfig } from "./routes/RouterConfig";
-
 function App() {
   return (
     <Web3ReactProvider getLibrary={getLibrary}>

@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useCrowdFundingContract } from "request/contract//useContract";
 import { useWeb3React } from "@web3-react/core";
 import { calculateGasMargin, dateFormat, FormatsEnums, parseAmount, formatAmount } from "utils/formatData";
 import styles from "./styles.module.scss";
-import { Modal, Form, Input, Button, DatePicker, message, InputNumber, Table, Space, Spin } from "antd";
+import { Modal, Form, Input, Button, DatePicker, message, InputNumber, Table, Space, Spin, Tabs } from "antd";
 import BigNumber from "bignumber.js";
 
 export declare type AlignType = "left" | "center" | "right";
-
+const { TabPane } = Tabs;
 export default function Container() {
   const columns = [
     {
@@ -122,6 +122,7 @@ export default function Container() {
   const [isLoading2, setIsLoading2] = useState(false);
   const [isLoading3, setIsLoading3] = useState(false);
   const [isLoading4, setIsLoading4] = useState(false);
+  const [tab, setTab] = useState("1");
 
   const [fundId, setFundId] = useState();
   const config = {
@@ -191,6 +192,7 @@ export default function Container() {
               clearInterval(timer);
               setIsLoading2(false);
               setIsModalVisible(false);
+              initData();
             }
           })
           .catch((err: any) => {
@@ -238,6 +240,7 @@ export default function Container() {
               clearInterval(timer);
               setIsLoading3(false);
               setIsModalVisible2(false);
+              initData();
             }
           })
           .catch((err: any) => {
@@ -285,6 +288,7 @@ export default function Container() {
               setIsLoading4(false);
               setIsModalVisible3(false);
               clearInterval(timer);
+              initData();
             }
           })
           .catch((err: any) => {
@@ -315,35 +319,43 @@ export default function Container() {
     form.resetFields();
   };
 
-  useEffect(() => {
-    if (account && chainId) {
-      const initData = async () => {
-        let allFundingLen = await CrowdFundingInstance.allFundingsLength();
-        let arr = [];
-        let id = 0;
-        for (let index = 0; index < allFundingLen; index++) {
-          const fundings = await CrowdFundingInstance.allFundings(index);
-          arr.push({
-            id: id++,
-            title: fundings.title,
-            content: fundings.content,
-            deadline: dateFormat(Number(fundings.deadline._hex), FormatsEnums.YMDHIS),
-            goalMoney: new BigNumber(fundings.goalMoney._hex).toString(),
-            raisedMoney: new BigNumber(fundings.raisedMoney._hex).toString(),
-            fundersLength: new BigNumber(fundings.fundersLength._hex).toString(),
-            proposalsLength: new BigNumber(fundings.proposalsLength._hex).toString(),
+  const initData = useCallback(async () => {
+    try {
+      let len = await CrowdFundingInstance.allFundingsLength();
 
-            isSuccess: fundings.isSuccess,
+      let arrLen = Number(new BigNumber(len._hex).toString());
+      let allFundingLen = new Array(...new Array(arrLen).keys());
+
+      let queue = allFundingLen.map((index) => {
+        return CrowdFundingInstance.allFundings(index);
+      });
+      Promise.all(queue).then((res: any) => {
+        let newArr: any[] = [];
+        let id = 0;
+        for (let i = 0; i < res.length; i++) {
+          newArr.push({
+            id: id++,
+            title: res[i].title,
+            content: res[i].content,
+            deadline: dateFormat(Number(res[i].deadline._hex), FormatsEnums.YMDHIS),
+            goalMoney: new BigNumber(res[i].goalMoney._hex).toString(),
+            raisedMoney: new BigNumber(res[i].raisedMoney._hex).toString(),
+            fundersLength: new BigNumber(res[i].fundersLength._hex).toString(),
+            proposalsLength: new BigNumber(res[i].proposalsLength._hex).toString(),
+            isSuccess: res[i].isSuccess,
           });
         }
-
-        setAllFundingsList([...arr]);
+        setAllFundingsList([...newArr]);
         setIsLoading1(false);
-      };
-
-      initData();
+      });
+    } catch (error) {
+      setIsLoading1(true);
+      setAllFundingsList([]);
     }
-  }, [account, chainId, CrowdFundingInstance]);
+  }, [CrowdFundingInstance]);
+  useEffect(() => {
+    initData();
+  }, [account, chainId, CrowdFundingInstance, initData]);
   const handleJoin = (text: any) => {
     setIsLoading3(false);
 
@@ -358,19 +370,39 @@ export default function Container() {
     setIsModalVisible3(true);
     form3.resetFields();
   };
+  const callback = (key: string) => {
+    setTab(key);
+    console.log(tab);
+  };
   return (
     <div className={styles["container"]}>
       <div className={styles["container-header"]}>
-        <div className={styles["container-header-add"]} onClick={showModal}>
-          新增众筹
+        <div className={styles["container-header-left"]}>
+          <Tabs defaultActiveKey="1" onChange={callback}>
+            <TabPane tab="全部众筹" key="1"></TabPane>
+            <TabPane tab="我的众筹" key="2"></TabPane>
+          </Tabs>
+        </div>
+        <div className={styles["container-header-right"]}>
+          <div className={styles["container-header-add"]} onClick={showModal}>
+            新增众筹
+          </div>
         </div>
       </div>
+      {tab === "1" ? (
+        <div className={styles["container-table"]}>
+          <Spin tip="Loading..." spinning={isLoading1}>
+            <Table columns={columns} dataSource={allFundingsList} rowKey="id" bordered />
+          </Spin>
+        </div>
+      ) : (
+        <div className={styles["container-table"]}>
+          {/* <Spin tip="Loading..." spinning={isLoading1}>
+            <Table columns={columns} dataSource={allFundingsList} rowKey="id" bordered />
+          </Spin> */}
+        </div>
+      )}
 
-      <div className={styles["container-table"]}>
-        <Spin tip="Loading..." spinning={isLoading1}>
-          <Table columns={columns} dataSource={allFundingsList} rowKey="id" bordered />
-        </Spin>
-      </div>
       <Modal title="新增众筹" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel} footer={null}>
         <Spin tip="Loading..." spinning={isLoading2}>
           <Form

@@ -5,8 +5,5 @@ import { Web3ReactContextInterface } from "@web3-react/core/dist/types";
 export function useActiveWeb3React(): Web3ReactContextInterface<Web3Provider> {
   const impersonate = false;
   const context = useWeb3React<Web3Provider>();
-  const contextNetwork = useWeb3React<Web3Provider>();
-  return context.active
-    ? { ...context, account: impersonate || context.account }
-    : { ...contextNetwork, account: impersonate || contextNetwork.account };
+  return { ...context, account: impersonate || context.account };
 }
