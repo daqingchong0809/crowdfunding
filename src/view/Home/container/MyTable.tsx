@@ -1,10 +1,11 @@
 import React from "react";
 import { Table, Spin, Space } from "antd";
+import { formatAmount } from "utils/formatData";
 import styles from "./styles.module.scss";
-import { formatAmount, getSubStr } from "utils/formatData";
+
 export declare type AlignType = "left" | "center" | "right";
 
-export default function TableList(props) {
+export default function MyTable(props) {
   const columns = [
     {
       title: "ID",
@@ -23,16 +24,6 @@ export default function TableList(props) {
       dataIndex: "content",
       key: "id",
       align: "center" as AlignType,
-    },
-    {
-      title: "发起者",
-
-      key: "id",
-      align: "center" as AlignType,
-      render: (
-        text: any,
-        record: { name: boolean | React.ReactChild | React.ReactFragment | React.ReactPortal | null | undefined },
-      ) => <div>{getSubStr(text.initiator)}</div>,
     },
     {
       title: "众筹目标(ETH)",
@@ -92,31 +83,22 @@ export default function TableList(props) {
       ) => (
         <Space size="middle">
           <div
-            className={styles["alltable-join"]}
-            onClick={() => {
-              props.handleJoin(text);
-            }}
-          >
-            参加
-          </div>
-
-          <div
             className={styles["alltable-apply"]}
             onClick={() => {
-              props.handleApply(text);
+              props.handleDetails(text);
             }}
           >
-            申请
+            详情
           </div>
         </Space>
       ),
     },
   ];
+  console.log(props.isDetail);
+
   return (
-    <div className={styles["alltable"]}>
-      <Spin tip="Loading..." spinning={props.AlltableLoading}>
-        <Table columns={columns} dataSource={props.allFundingsList} rowKey="id" bordered />
-      </Spin>
+    <div>
+      <Table columns={columns} dataSource={props.myFundingsList} rowKey="id" bordered />
     </div>
   );
 }

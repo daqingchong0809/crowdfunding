@@ -1,7 +1,8 @@
 import { useState, useCallback, useEffect } from "react";
 import styles from "./styles.module.scss";
 import Header from "./Header";
-import TableList from "./AllTable";
+import AllTableList from "./AllTable";
+import MyTable from "./MyTable";
 import AddModal from "components/modal/AddFunding";
 import ApplyModal from "components/modal/ApplyFunding";
 import JoinModal from "components/modal/JoinFunding";
@@ -15,26 +16,30 @@ export default function Container() {
   const [newVisible, setNewVisible] = useState(false);
   const [applyVisible, setApplyVisible] = useState(false);
   const [joinVisible, setJoinVisible] = useState(false);
-
   const [AddForm] = Form.useForm();
   const [applyForm] = Form.useForm();
   const [joinForm] = Form.useForm();
-
   const [time, setTime] = useState<number>(0);
   const [addLoading, setAddLoading] = useState(false);
   const [applyLoading, setApplyLoading] = useState(false);
   const [joinLoading, setJoinLoading] = useState(false);
-
   const [AlltableLoading, setAlltableLoading] = useState(false);
   const CrowdFundingInstance = useCrowdFundingContract();
   const [allFundingsList, setAllFundingsList] = useState([]);
+  const [myFundingsList, setMyFundingsList] = useState([]);
+
   const { account, library, chainId } = useWeb3React();
   const [modalObject, setModalObject] = useState({});
+  const [tabKey, setTabKey] = useState(1);
+  const [isDetail, setIsDetail] = useState(false);
   const callback = (key) => {
-    console.log(key);
+    setTabKey(key);
+    filterData();
   };
   const handleAdd = () => {
     setNewVisible(true);
+    setAddLoading(false);
+
     onAddReset();
   };
   const handleAddCancel = () => {
@@ -143,6 +148,7 @@ export default function Container() {
             id: id++,
             title: res[i].title,
             content: res[i].content,
+            initiator: res[i].initiator,
             deadline: dateFormat(Number(res[i].deadline._hex), FormatsEnums.YMDHIS),
             goalMoney: new BigNumber(res[i].goalMoney._hex).toString(),
             raisedMoney: new BigNumber(res[i].raisedMoney._hex).toString(),
@@ -160,9 +166,20 @@ export default function Container() {
       setAllFundingsList([]);
     }
   }, [CrowdFundingInstance]);
+
+  const filterData = useCallback(() => {
+    let filterList = allFundingsList.filter((item) => {
+      return item.initiator === account;
+    });
+
+    setMyFundingsList([...filterList]);
+  }, [account, allFundingsList]);
   useEffect(() => {
     initData();
   }, [account, chainId, CrowdFundingInstance, initData]);
+  useEffect(() => {
+    filterData();
+  }, [account, chainId, filterData]);
   const onFinish = async (values: any) => {
     let date = new Date().getTime();
     if (date >= time) {
@@ -214,32 +231,44 @@ export default function Container() {
 
             console.log("交易成功");
             clearInterval(timer);
-            setAddLoading(false);
-            setNewVisible(false);
-            setApplyLoading(false);
-            setApplyVisible(false);
-            setJoinVisible(false);
-            setJoinLoading(false);
+            setAllFalse();
           }
         })
         .catch((err: any) => {
           if (err) clearInterval(timer);
+          setAllFalse();
         });
       if (timeTake > 20) {
         console.log("轮训hash超时");
+        setAllFalse();
+
         clearInterval(timer);
       }
     }, 1000);
   };
+  const setAllFalse = () => {
+    setAddLoading(false);
+    setNewVisible(false);
+    setApplyLoading(false);
+    setApplyVisible(false);
+    setJoinVisible(false);
+    setJoinLoading(false);
+  };
+
   return (
     <div className={styles["container"]}>
       <Header callback={callback} handleAdd={handleAdd}></Header>
-      <TableList
-        AlltableLoading={AlltableLoading}
-        allFundingsList={allFundingsList}
-        handleJoin={handleJoin}
-        handleApply={handleApply}
-      ></TableList>
+      {tabKey == 1 ? (
+        <AllTableList
+          AlltableLoading={AlltableLoading}
+          allFundingsList={allFundingsList}
+          handleJoin={handleJoin}
+          handleApply={handleApply}
+        ></AllTableList>
+      ) : (
+        <MyTable myFundingsList={myFundingsList} isDetail={isDetail}></MyTable>
+      )}
+
       <AddModal
         newVisible={newVisible}
         handleAddCancel={handleAddCancel}
