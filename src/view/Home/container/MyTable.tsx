@@ -2,7 +2,7 @@ import React from "react";
 import { Table, Spin, Space } from "antd";
 import { formatAmount } from "utils/formatData";
 import styles from "./styles.module.scss";
-
+import Proposal from "./Proposal";
 export declare type AlignType = "left" | "center" | "right";
 
 export default function MyTable(props) {
@@ -94,11 +94,14 @@ export default function MyTable(props) {
       ),
     },
   ];
-  console.log(props.isDetail);
 
   return (
     <div>
-      <Table columns={columns} dataSource={props.myFundingsList} rowKey="id" bordered />
+      {!props.isDetail ? (
+        <Table columns={columns} dataSource={props.myFundingsList} rowKey="id" bordered />
+      ) : (
+        <Proposal handleDetails={props.handleDetails} proposal={props.proposal}></Proposal>
+      )}
     </div>
   );
 }

@@ -26,6 +26,81 @@
     "inputs": [
       {
         "internalType": "uint256",
+        "name": "_fundId",
+        "type": "uint256"
+      }
+    ],
+    "name": "contribute",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address payable",
+        "name": "_initiator",
+        "type": "address"
+      },
+      {
+        "internalType": "string",
+        "name": "_title",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_content",
+        "type": "string"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_goalMoney",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_remainingtime",
+        "type": "uint256"
+      }
+    ],
+    "name": "createFunding",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_fundId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "string",
+        "name": "_content",
+        "type": "string"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "createProposal",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
         "name": "",
         "type": "uint256"
       }
@@ -97,81 +172,6 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_fundId",
-        "type": "uint256"
-      }
-    ],
-    "name": "contribute",
-    "outputs": [],
-    "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address payable",
-        "name": "_initiator",
-        "type": "address"
-      },
-      {
-        "internalType": "string",
-        "name": "_title",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "_content",
-        "type": "string"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_goalMoney",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_remainingtime",
-        "type": "uint256"
-      }
-    ],
-    "name": "createFunding",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_fundId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "string",
-        "name": "_content",
-        "type": "string"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "createProposal",
-    "outputs": [],
-    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -269,6 +269,11 @@
         "internalType": "bool",
         "name": "",
         "type": "bool"
+      },
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
       }
     ],
     "stateMutability": "view",

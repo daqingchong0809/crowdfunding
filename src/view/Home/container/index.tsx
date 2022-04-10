@@ -27,14 +27,17 @@ export default function Container() {
   const CrowdFundingInstance = useCrowdFundingContract();
   const [allFundingsList, setAllFundingsList] = useState([]);
   const [myFundingsList, setMyFundingsList] = useState([]);
+  const [proposal, setProposal] = useState([]);
 
   const { account, library, chainId } = useWeb3React();
   const [modalObject, setModalObject] = useState({});
   const [tabKey, setTabKey] = useState(1);
   const [isDetail, setIsDetail] = useState(false);
+
   const callback = (key) => {
     setTabKey(key);
     filterData();
+    setIsDetail(false);
   };
   const handleAdd = () => {
     setNewVisible(true);
@@ -135,7 +138,8 @@ export default function Container() {
       let len = await CrowdFundingInstance.allFundingsLength();
 
       let arrLen = Number(new BigNumber(len._hex).toString());
-      let allFundingLen = new Array(...new Array(arrLen).keys());
+
+      let allFundingLen = arrLen >= 1 ? new Array(...new Array(arrLen).keys()) : [0];
 
       let queue = allFundingLen.map((index) => {
         return CrowdFundingInstance.allFundings(index);
@@ -254,7 +258,35 @@ export default function Container() {
     setJoinVisible(false);
     setJoinLoading(false);
   };
+  const handleDetails = async (item) => {
+    setIsDetail(!isDetail);
 
+    const proposal = await CrowdFundingInstance.getProposalsLength(item.id);
+    let arrLen = Number(new BigNumber(proposal._hex).toString());
+    let allProposalLen = new Array(...new Array(arrLen + 1).keys());
+
+    let queue = allProposalLen.map((index) => {
+      return CrowdFundingInstance.getProposal(item.id, index + 1);
+    });
+    Promise.all(queue).then((res: any) => {
+      let newArr: any[] = [];
+      let id = 1;
+      for (let m = 0; m < res.length - 1; m++) {
+        newArr.push({
+          id: id++,
+          content: res[m][0],
+          amount: formatAmount(new BigNumber(res[m][1]._hex).toString()),
+          agreeAmount: formatAmount(new BigNumber(res[m][2]._hex).toString()),
+          disAmount: formatAmount(new BigNumber(res[m][3]._hex).toString()),
+          goal: formatAmount(new BigNumber(res[m][4]._hex).toString()),
+          isAgreed: res[m][5],
+        });
+      }
+      console.log(222222, newArr);
+
+      setProposal([...newArr]);
+    });
+  };
   return (
     <div className={styles["container"]}>
       <Header callback={callback} handleAdd={handleAdd}></Header>
@@ -266,7 +298,12 @@ export default function Container() {
           handleApply={handleApply}
         ></AllTableList>
       ) : (
-        <MyTable myFundingsList={myFundingsList} isDetail={isDetail}></MyTable>
+        <MyTable
+          myFundingsList={myFundingsList}
+          isDetail={isDetail}
+          handleDetails={handleDetails}
+          proposal={proposal}
+        ></MyTable>
       )}
 
       <AddModal
